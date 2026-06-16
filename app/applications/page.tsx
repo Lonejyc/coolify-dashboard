@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { Search, ServerOff, Wifi, WifiOff, RefreshCw } from "lucide-react";
@@ -52,19 +52,17 @@ export default function ApplicationsPage() {
   const { data, error, isLoading, mutate, isValidating } =
     useCoolifyApplications();
 
-  const filtered = useMemo(() => {
-    if (!data?.applications) return [];
-    return data.applications.filter((app) => {
-      const q = search.toLowerCase();
-      const matchSearch =
-        !q ||
-        app.name.toLowerCase().includes(q) ||
-        app.fqdn?.toLowerCase().includes(q) ||
-        app.git_repository?.toLowerCase().includes(q);
-      const matchStatus = statusFilter === "all" || app.status === statusFilter;
-      return matchSearch && matchStatus;
-    });
-  }, [data?.applications, search, statusFilter]);
+  const applications = data?.applications ?? [];
+  const filtered = applications.filter((app) => {
+    const q = search.toLowerCase();
+    const matchSearch =
+      !q ||
+      app.name.toLowerCase().includes(q) ||
+      app.fqdn?.toLowerCase().includes(q) ||
+      app.git_repository?.toLowerCase().includes(q);
+    const matchStatus = statusFilter === "all" || app.status === statusFilter;
+    return matchSearch && matchStatus;
+  });
 
   return (
     <div className="min-h-screen bg-grain-background bg-cover text-zinc-300 flex flex-col">

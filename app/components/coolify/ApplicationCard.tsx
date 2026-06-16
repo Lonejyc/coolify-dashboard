@@ -93,8 +93,8 @@ export default function ApplicationCard({ app, onActionComplete }: Props) {
       if (!res.ok) throw new Error(data.message || `${type} failed`);
       toast.success(msgMap[type]);
       setTimeout(() => onActionComplete?.(), 1500);
-    } catch (e: any) {
-      toast.error(e.message);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
     } finally {
       setMap[type](false);
     }

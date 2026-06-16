@@ -17,7 +17,7 @@ interface CoolifyTestResponse {
   applications: CoolifyApplication[];
   timestamp: string;
   error?: string;
-  details?: any;
+  details?: string;
 }
 
 const fetcher = async (): Promise<CoolifyTestResponse> => {
@@ -43,7 +43,7 @@ const fetcher = async (): Promise<CoolifyTestResponse> => {
       : appsData.data || [];
 
     // Parse status format (Coolify returns "state:health" like "running:unhealthy")
-    const parsedApplications = applications.map((app: any) => ({
+    const parsedApplications = applications.map((app: CoolifyApplication & { status?: string }) => ({
       ...app,
       status: app.status?.split(":")[0] || "unknown",
     }));
@@ -55,10 +55,10 @@ const fetcher = async (): Promise<CoolifyTestResponse> => {
       applications: parsedApplications,
       timestamp: new Date().toISOString(),
     };
-  } catch (error: any) {
+  } catch (error) {
     return {
       connected: false,
-      error: error.message || "Failed to fetch applications",
+      error: error instanceof Error ? error.message : "Failed to fetch applications",
       count: 0,
       applications: [],
       timestamp: new Date().toISOString(),

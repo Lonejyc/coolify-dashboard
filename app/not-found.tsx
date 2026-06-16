@@ -15,13 +15,13 @@ export default function NotFound() {
           Page introuvable
         </h2>
         <p className="text-slate-400 mb-8">
-          La page que vous recherchez n'existe pas ou a été déplacée.
+          La page que vous recherchez n&apos;existe pas ou a été déplacée.
         </p>
         <Link
           href="/"
           className="inline-block px-6 py-3 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors"
         >
-          Retour à l'accueil
+          Retour à l&apos;accueil
         </Link>
       </div>
     </div>
