@@ -17,6 +17,7 @@ Ce guide vous accompagne pas à pas pour configurer l'accès API à votre instan
 ### **1.1 Accéder à votre instance Coolify**
 
 Ouvrez votre navigateur et connectez-vous à votre dashboard Coolify :
+
 ```
 https://your-coolify-instance.com
 ```
@@ -32,7 +33,7 @@ https://your-coolify-instance.com
 2. Remplissez les informations :
    - **Name** : `Liste Control Plane` (ou un nom descriptif)
    - **Permissions** : Sélectionnez `*` (all permissions)
-   
+
    **Pourquoi `*` ?** Ce scope donne un accès complet pour :
    - Lire toutes les applications, databases, services
    - Créer, modifier, supprimer des ressources
@@ -50,6 +51,7 @@ https://your-coolify-instance.com
 2. Conservez-le dans un endroit sûr (gestionnaire de mots de passe recommandé)
 
 **Exemple de token** :
+
 ```
 3|WaobqX9tJQshKPuQFHsyApxuOOggg4wOfvGc9xa233c376d7
 ```
@@ -75,6 +77,7 @@ COOLIFY_API_TOKEN=3|WaobqX9tJQshKPuQFHsyApxuOOggg4wOfvGc9xa233c376d7
 ```
 
 **⚠️ Checklist de vérification :**
+
 - ✅ L'URL se termine bien par `/api/v1`
 - ✅ L'URL utilise `https://` (pas `http://` sauf en local)
 - ✅ Le token est complet (commence par un chiffre puis `|`)
@@ -102,14 +105,16 @@ npm run dev
 
 ### **3.2 Vérifier dans les logs**
 
-Au démarrage, l'application va tenter de se connecter à l'API Coolify. 
+Au démarrage, l'application va tenter de se connecter à l'API Coolify.
 
 Si tout est OK, vous verrez dans la console :
+
 ```
 ✅ Coolify API connected successfully
 ```
 
 Si erreur, vérifiez :
+
 - ❌ Token invalide ou expiré
 - ❌ URL incorrecte (vérifiez les typos)
 - ❌ Firewall bloque les requêtes
@@ -126,6 +131,7 @@ curl -X GET "https://your-coolify-instance.com/api/v1/version" \
 ```
 
 **Réponse attendue** :
+
 ```json
 {
   "version": "4.x.x",
@@ -158,6 +164,7 @@ curl -X GET "https://your-coolify-instance.com/api/v1/version" \
 ### **Révocation d'un token**
 
 Si vous devez révoquer un token :
+
 1. Retournez dans **Keys & Tokens** > **API Tokens**
 2. Cliquez sur l'icône **poubelle** à côté du token
 3. Confirmez la suppression
@@ -168,9 +175,11 @@ Si vous devez révoquer un token :
 ## 🐛 Troubleshooting
 
 ### **Erreur : `401 Unauthorized`**
+
 **Cause** : Token invalide ou expiré
 
 **Solution** :
+
 1. Vérifiez que le token est correct (copier-coller complet)
 2. Générez un nouveau token dans Coolify
 3. Mettez à jour `.env.local`
@@ -179,9 +188,11 @@ Si vous devez révoquer un token :
 ---
 
 ### **Erreur : `404 Not Found`**
+
 **Cause** : URL incorrecte
 
 **Solution** :
+
 1. Vérifiez l'URL (doit finir par `/api/v1`)
 2. Testez l'URL dans le navigateur : `https://your-instance.com/api/v1/version`
 3. Si erreur SSL, vérifiez le certificat
@@ -189,9 +200,11 @@ Si vous devez révoquer un token :
 ---
 
 ### **Erreur : `Network Error` / `ECONNREFUSED`**
+
 **Cause** : Impossible de joindre l'instance Coolify
 
 **Solution** :
+
 1. Vérifiez que l'instance Coolify est bien en ligne
 2. Testez un `ping` vers le serveur
 3. Vérifiez les règles de firewall (ports 80/443 ouverts)
@@ -200,9 +213,11 @@ Si vous devez révoquer un token :
 ---
 
 ### **Erreur : `403 Forbidden`**
+
 **Cause** : Token valide mais permissions insuffisantes
 
 **Solution** :
+
 1. Retournez dans Coolify > API Tokens
 2. Éditez le token
 3. Changez les permissions vers `*` (all permissions)
@@ -211,9 +226,11 @@ Si vous devez révoquer un token :
 ---
 
 ### **Erreur : `Too Many Requests (429)`**
+
 **Cause** : Rate limiting dépassé
 
 **Solution** :
+
 1. Attendez quelques minutes
 2. Réduisez la fréquence des polling (augmenter `refreshInterval`)
 3. Implémentez un cache côté client (SWR le fait déjà)
@@ -223,22 +240,24 @@ Si vous devez révoquer un token :
 ## 📚 Ressources Utiles
 
 ### **Documentation Coolify API**
+
 - [API Reference officielle](https://coolify.io/docs/api-reference/authorization)
 - [Liste des endpoints disponibles](https://coolify.io/docs/api-reference/api/operations/list-applications)
 
 ### **Tester l'API**
+
 - **Postman** : Importez la collection OpenAPI de Coolify
 - **Bruno** : Alternative open-source à Postman
 - **curl** : Pour tester en ligne de commande
 
 ### **Permissions détaillées**
 
-| Permission | Description | Usage |
-|------------|-------------|-------|
-| `read-only` | Lecture seule (données publiques) | Monitoring, dashboards read-only |
-| `read:sensitive` | Lecture + données sensibles | Voir env vars, tokens |
-| `view:sensitive` | Voir mais pas modifier les données sensibles | Debugging, support |
-| `*` | Toutes les permissions | Contrôle total (recommandé pour cette app) |
+| Permission       | Description                                  | Usage                                      |
+| ---------------- | -------------------------------------------- | ------------------------------------------ |
+| `read-only`      | Lecture seule (données publiques)            | Monitoring, dashboards read-only           |
+| `read:sensitive` | Lecture + données sensibles                  | Voir env vars, tokens                      |
+| `view:sensitive` | Voir mais pas modifier les données sensibles | Debugging, support                         |
+| `*`              | Toutes les permissions                       | Contrôle total (recommandé pour cette app) |
 
 ---
 
@@ -260,5 +279,6 @@ Avant de continuer vers le Jour 2, vérifiez que :
 ---
 
 **Besoin d'aide ?**
+
 - Discord Coolify : [https://coollabs.io/discord](https://coollabs.io/discord)
 - GitHub Issues : [https://github.com/coollabsio/coolify/issues](https://github.com/coollabsio/coolify/issues)

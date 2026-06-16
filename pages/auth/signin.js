@@ -1,71 +1,108 @@
-// pages/auth/signin.js
 import { getCsrfToken } from "next-auth/react";
-import Layout from "../../components/Layout";
-import { HiOutlineUser, HiOutlineLockClosed } from "react-icons/hi2";
-import { FiLogIn } from "react-icons/fi";
+import Head from "next/head";
+import { User, Lock, LogIn } from "lucide-react";
 
-export default function SignIn({ csrfToken }) {
+export default function SignIn({ csrfToken, error }) {
   return (
-    <Layout title="Connexion">
-      <div className="w-full max-w-md bg-slate-900/40 backdrop-blur-xl border border-slate-800 p-8 rounded-2xl shadow-2xl">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-900/30 border border-emerald-800/50 mb-4">
-            <FiLogIn className="text-3xl text-emerald-500" />
+    <>
+      <Head>
+        <title>Sign In — Liste</title>
+      </Head>
+      <div className="min-h-screen bg-grain-background bg-cover flex items-center justify-center px-4">
+        <div className="w-full max-w-sm">
+          {/* Logo / brand */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 mb-4">
+              <LogIn className="w-5 h-5 text-emerald-400" />
+            </div>
+            <h1 className="text-xl font-semibold text-zinc-50 tracking-tight">
+              Welcome back
+            </h1>
+            <p className="text-sm text-zinc-600 mt-1">
+              Sign in to your control plane
+            </p>
           </div>
-          <h2 className="text-2xl font-bold text-slate-100">Welcome Back</h2>
-          <p className="text-slate-400 text-sm mt-2">Please enter your details to sign in</p>
+
+          {/* Error banner */}
+          {error && (
+            <div className="mb-4 px-4 py-2.5 rounded-lg bg-red-500/5 border border-red-500/20 text-sm text-red-400 font-mono text-center">
+              {error === "CredentialsSignin"
+                ? "Invalid username or password."
+                : `Error: ${error}`}
+            </div>
+          )}
+
+          {/* Form card */}
+          <div className="bg-black/40 backdrop-blur-md border border-zinc-800/50 rounded-xl p-6">
+            <form
+              method="post"
+              action="/api/auth/callback/credentials"
+              className="flex flex-col gap-5"
+            >
+              <input
+                name="csrfToken"
+                type="hidden"
+                defaultValue={csrfToken ?? ""}
+              />
+
+              {/* Username */}
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="username"
+                  className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest"
+                >
+                  Username
+                </label>
+                <div className="relative group">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-600 group-focus-within:text-emerald-500 transition-colors pointer-events-none" />
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    autoComplete="username"
+                    placeholder="admin"
+                    className="w-full pl-9 pr-4 py-2.5 bg-zinc-950/60 border border-zinc-800 rounded-lg text-sm text-zinc-200 placeholder-zinc-700 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-150"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="password"
+                  className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest"
+                >
+                  Password
+                </label>
+                <div className="relative group">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-600 group-focus-within:text-emerald-500 transition-colors pointer-events-none" />
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    className="w-full pl-9 pr-4 py-2.5 bg-zinc-950/60 border border-zinc-800 rounded-lg text-sm text-zinc-200 placeholder-zinc-700 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-150"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-emerald-500/15 border border-emerald-500/25 text-sm font-medium text-emerald-400 hover:bg-emerald-500/25 hover:border-emerald-500/40 active:scale-[0.98] transition-all duration-150"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                Sign In
+              </button>
+            </form>
+          </div>
+
+          <p className="mt-6 text-center text-[11px] font-mono text-zinc-800 uppercase tracking-widest">
+            Authorized personnel only
+          </p>
         </div>
-
-        <form method="post" action="/api/auth/callback/credentials" className="space-y-6">
-          <input name='csrfToken' type='hidden' defaultValue={csrfToken || null}/>
-
-          <div className="space-y-2">
-            <label htmlFor="username" className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
-              Username
-            </label>
-            <div className="relative group">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 group-focus-within:text-emerald-500 transition-colors">
-                <HiOutlineUser className="text-xl" />
-              </span>
-              <input
-                name="username"
-                type="text"
-                placeholder="admin"
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-950/50 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-all"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
-              Password
-            </label>
-            <div className="relative group">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 group-focus-within:text-emerald-500 transition-colors">
-                <HiOutlineLockClosed className="text-xl" />
-              </span>
-              <input
-                name="password"
-                type="password"
-                placeholder="••••••••"
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-950/50 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-all"
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-700 py-3.5 text-sm font-bold text-slate-100 transition-all hover:bg-emerald-600 hover:shadow-[0_0_20px_rgba(5,150,105,0.4)] active:scale-[0.98]"
-          >
-            Sign In
-          </button>
-        </form>
-
-        <p className="mt-8 text-center text-xs text-slate-500 italic">
-          Authorized personnel only
-        </p>
       </div>
-    </Layout>
+    </>
   );
 }
 
@@ -74,8 +111,8 @@ export async function getServerSideProps(context) {
   const csrfToken = await getCsrfToken(context);
   return {
     props: {
-      csrfToken: csrfToken || null,
-      error: error || null,
+      csrfToken: csrfToken ?? null,
+      error: error ?? null,
     },
   };
 }

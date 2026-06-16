@@ -1,9 +1,9 @@
 // pages/api/explore.js
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
 export default function handler(req, res) {
-  const directoryPath = path.join(process.cwd(), 'public'); // Modifier selon le dossier cible
+  const directoryPath = path.join(process.cwd(), "public"); // Modifier selon le dossier cible
 
   fs.readdir(directoryPath, (err, files) => {
     if (err) {

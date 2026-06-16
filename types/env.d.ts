@@ -1,6 +1,6 @@
 /**
  * Type definitions for environment variables
- * 
+ *
  * This ensures TypeScript knows about all environment variables
  * and provides autocomplete + type safety when accessing process.env
  */
@@ -24,6 +24,6 @@ declare namespace NodeJS {
     COOLIFY_API_TOKEN: string;
 
     // Node environment
-    NODE_ENV: 'development' | 'production' | 'test';
+    NODE_ENV: "development" | "production" | "test";
   }
 }

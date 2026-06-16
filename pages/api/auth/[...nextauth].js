@@ -9,32 +9,47 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "Enter your username" },
-        password: { label: "Password", type: "password", placeholder: "Enter your password" }
+        username: {
+          label: "Username",
+          type: "text",
+          placeholder: "Enter your username",
+        },
+        password: {
+          label: "Password",
+          type: "password",
+          placeholder: "Enter your password",
+        },
       },
       authorize: async (credentials, req) => {
-        const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        const userIP =
+          req.headers["x-forwarded-for"] || req.connection.remoteAddress;
 
         if (allowedIPs.includes(userIP)) {
-          return { id: "1", name: "Jocelyn", email: "jocelyn.marcilloux@gmail.com" };
+          return {
+            id: "1",
+            name: "Jocelyn",
+            email: "jocelyn.marcilloux@gmail.com",
+          };
         }
 
-        if (credentials.username === process.env.ADMIN_USERNAME &&
-            credentials.password === process.env.ADMIN_PASSWORD) {
+        if (
+          credentials.username === process.env.ADMIN_USERNAME &&
+          credentials.password === process.env.ADMIN_PASSWORD
+        ) {
           return { id: "2", name: "Admin", email: "admin@gmail.com" };
         }
 
         return null;
-      }
-    })
+      },
+    }),
   ],
   pages: {
-    signIn: '/auth/signin',
-    error: '/auth/error',
+    signIn: "/auth/signin",
+    error: "/auth/error",
   },
   session: {
     strategy: "jwt",
-    secret: process.env.JWT_SECRET
+    secret: process.env.JWT_SECRET,
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -51,11 +66,11 @@ export const authOptions = {
         id: token.id || null,
         email: token.email || null,
         name: token.name || null,
-        image: null
+        image: null,
       };
       return session;
-    }
-  }
+    },
+  },
 };
 
 export default NextAuth(authOptions);

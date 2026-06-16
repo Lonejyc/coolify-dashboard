@@ -17,21 +17,25 @@ Liste est une interface de contrôle moderne qui offre une vue d'ensemble en tem
 ## ⚡ Stack Technique
 
 ### **Core Framework**
+
 - **Next.js 15** (Pages Router) — Framework React pour SSR et API Routes
 - **React 19** — Bibliothèque UI
 - **NextAuth.js 4.24.7** — Authentification avec stratégie JWT
 
 ### **Styling & UI**
+
 - **Tailwind CSS 3.4** — Utility-first CSS framework
 - **React Icons 5.5** — Collection d'icônes (Feather, FontAwesome, HeroIcons)
 - **Aesthetic** : Design glassmorphism dark mode avec accents emerald et effet "cyberpunk"
 
 ### **Monitoring & System**
+
 - **systeminformation 5.22** — Collecte de métriques système (Node.js)
 - **Agent Python externe** (port 8000) — Service de monitoring avancé
 - **Sparkline charts** — Visualisation temps réel des historiques CPU/RAM
 
 ### **Configuration**
+
 - **jsconfig.json** — Path aliases (`@/*`, `@api/*`)
 - **PostCSS + Tailwind** — Pipeline de transformation CSS
 
@@ -42,6 +46,7 @@ Liste est une interface de contrôle moderne qui offre une vue d'ensemble en tem
 ### ✅ **Actuellement implémenté**
 
 #### 🏠 Dashboard Système (`/`)
+
 - **Métriques en temps réel** (refresh automatique toutes les 1s)
   - CPU : Usage %, température, fréquence
   - RAM : Usage %, allouée/totale
@@ -52,6 +57,7 @@ Liste est une interface de contrôle moderne qui offre une vue d'ensemble en tem
 - **SSR + CSR** : Données initiales en server-side, puis client-side polling
 
 #### 🗂️ Matrix des Projets (`/liste`)
+
 - **Vue grille** : 5 projets actuellement configurés
 - **Badges de status** : ONLINE (vert), DEV (jaune), OFFLINE (rouge)
 - **Tech stack tags** : Technologies utilisées par projet
@@ -59,6 +65,7 @@ Liste est une interface de contrôle moderne qui offre une vue d'ensemble en tem
 - **Données statiques** : Chargées depuis `data/projects.json`
 
 **Projets actuels** :
+
 1. **Portfolio Nono** (ONLINE) — TypeScript, Next.js, Tailwind
 2. **PoC MyRole** (OFFLINE) — PHP, Symfony, API Platform
 3. **Budgy App** (DEV) — Next.js, Elysia, Tailwind
@@ -66,6 +73,7 @@ Liste est une interface de contrôle moderne qui offre une vue d'ensemble en tem
 5. **Symfo Gobelins** (ONLINE) — PHP, Symfony, API Platform
 
 #### 🔐 Authentification
+
 - **NextAuth custom provider** : Credentials + IP whitelist
 - **IPs autorisées** : `176.150.41.253`, `82.66.241.186`
 - **Fallback** : Username/password depuis `.env.local`
@@ -73,6 +81,7 @@ Liste est une interface de contrôle moderne qui offre une vue d'ensemble en tem
 - **Page de connexion custom** : UI glassmorphic avec protection CSRF
 
 #### 🔌 API Routes
+
 - **`/api/system-info`** (GET) — Proxy vers agent de monitoring Python
 - **`/api/explore`** (GET) — Liste des fichiers du répertoire `/public`
 - **`/api/auth/[...nextauth]`** — Endpoints NextAuth (sign in/out, session)
@@ -84,24 +93,29 @@ Liste est une interface de contrôle moderne qui offre une vue d'ensemble en tem
 L'objectif à terme est de transformer ce dashboard en **Control Plane complet** pour Coolify :
 
 #### Phase 1 : Intégration Coolify API
-- [ ] **Connexion Coolify REST API** : Proxy routes vers l'instance Coolify
-- [ ] **Chargement dynamique des projets** : Remplacer `projects.json` par des appels API
-- [ ] **Status réels** : Récupération automatique de l'état des containers Docker
+
+- [x] **Connexion Coolify REST API** : Proxy routes dynamiques vers l'instance Coolify (`lib/coolify-client.ts`)
+- [x] **Chargement dynamique des projets** : Appels API Coolify via `useCoolifyApplications` hook
+- [x] **Status réels** : Récupération automatique de l'état des containers Docker (parsing du format composite Coolify)
 - [ ] **Health checks automatisés** : Ping/latency en temps réel pour chaque service
 
 #### Phase 2 : Gestion des Déploiements
-- [ ] **Trigger deployments** : Interface pour lancer/arrêter/redémarrer des applications
+
+- [x] **Trigger deployments** : Boutons d'action sur la page applications (lancer/arrêter/redémarrer)
 - [ ] **Logs en temps réel** : Visualisation des logs Coolify directement dans l'UI
 - [ ] **Notifications** : Alertes en cas de déploiement échoué
 - [ ] **Templates Nixpacks/Docker** : Configuration automatisée pour éviter les erreurs
 
-#### Phase 3 : Migration Technique
-- [ ] **Migrer vers App Router** (Next.js 13+)
-- [ ] **Conversion TypeScript** : Refactoriser `.js` → `.ts/.tsx`
-- [ ] **Intégrer Shadcn/UI** : Remplacer composants custom par design system Shadcn
-- [ ] **Ajouter Lucide React** : Remplacer React Icons par Lucide
+#### Phase 3 : Migration Technique ✅
+
+- [x] **Migré vers App Router** (Next.js 15)
+- [x] **Conversion TypeScript** : Projet entièrement en `.ts/.tsx`
+- [x] **Intégré Shadcn/UI** : Design system Shadcn en place
+- [x] **Ajouté Lucide React** : Icônes Lucide, suppression de React Icons
+- [x] **Header/Footer** : Composants globaux de layout
 
 #### Phase 4 : Monitoring Avancé
+
 - [ ] **Dashboard multi-serveurs** : Support de plusieurs instances Coolify
 - [ ] **Métriques Docker** : CPU/RAM par container
 - [ ] **Alerting system** : Webhooks Discord/Slack en cas d'incident
@@ -112,17 +126,20 @@ L'objectif à terme est de transformer ce dashboard en **Control Plane complet**
 ## 🛠️ Installation & Développement
 
 ### **Pré-requis**
+
 - **Node.js 18+** (recommandé : 20 LTS)
 - **npm** ou **pnpm**
 - **Agent de monitoring Python** (optionnel, pour métriques système)
 
 ### **1. Cloner le repository**
+
 ```bash
 git clone github.com/Lonejyc/liste.git
 cd liste
 ```
 
 ### **2. Installer les dépendances**
+
 ```bash
 npm install
 ```
@@ -148,6 +165,7 @@ MONITOR_AGENT_URL=http://localhost:8000/api/stats
 ```
 
 ### **4. Lancer le serveur de développement**
+
 ```bash
 npm run dev
 ```
@@ -155,6 +173,7 @@ npm run dev
 L'application sera disponible sur **http://localhost:3000**
 
 ### **5. Build de production**
+
 ```bash
 npm run build
 npm run start
@@ -206,6 +225,7 @@ liste/
 ## 📊 Architecture & Patterns
 
 ### **Authentification Flow**
+
 1. User accède à une page protégée
 2. Middleware NextAuth vérifie la session JWT
 3. Si non authentifié → redirect `/auth/signin`
@@ -215,6 +235,7 @@ liste/
 5. Si authentifié → session stockée en JWT (pas de DB)
 
 ### **Monitoring System**
+
 1. **Server-Side Rendering** : `getServerSideProps` fetch initial data
 2. **Client-Side Polling** : `useEffect` appelle `/api/system-info` toutes les 1s
 3. **Proxy API Route** : Next.js → Agent Python externe (port 8000)
@@ -222,6 +243,7 @@ liste/
 5. **UI Update** : Composants re-render avec nouvelles données
 
 ### **Projects Data Flow**
+
 ```
 data/projects.json → getServerSideProps → SSR → Client Hydration → Matrix UI
 ```
@@ -233,14 +255,16 @@ data/projects.json → getServerSideProps → SSR → Client Hydration → Matri
 ## 🔒 Sécurité
 
 ### **Mesures implémentées**
+
 ✅ **NextAuth JWT** : Sessions sans base de données  
 ✅ **IP Whitelisting** : Limitation des IPs autorisées  
 ✅ **Credentials hashing** : (recommandé : ajouter bcrypt pour passwords)  
 ✅ **CSRF Protection** : Tokens NextAuth intégrés  
 ✅ **Environment variables** : Secrets non versionnés  
-✅ **SSR Auth checks** : Redirection server-side si non authentifié  
+✅ **SSR Auth checks** : Redirection server-side si non authentifié
 
 ### **Recommandations**
+
 - [ ] Ajouter **rate limiting** sur `/api/auth`
 - [ ] Implémenter **2FA** pour l'authentification
 - [ ] Logger les tentatives de connexion échouées
@@ -263,14 +287,17 @@ npm run lint     # Linter Next.js (ESLint)
 ## 🐛 Dépendances Externes
 
 ### **Agent de Monitoring Python** (optionnel)
+
 Le dashboard nécessite un agent Python externe pour collecter les métriques système avancées.
 
 **Configuration** :
+
 - **URL** : Définie dans `MONITOR_AGENT_URL` (`.env.local`)
 - **Endpoint** : `GET /api/stats`
 - **Port par défaut** : `8000`
 
 **Comportement si agent indisponible** :
+
 - `/api/system-info` retourne une erreur 500
 - Le dashboard affiche un état de chargement infini (amélioration à prévoir)
 
@@ -279,12 +306,14 @@ Le dashboard nécessite un agent Python externe pour collecter les métriques sy
 ## 🤝 Contribution & Développement
 
 ### **Conventions de code**
+
 - **Modularité** : Composants réutilisables dans `/components`
 - **Clarté > Cleverness** : Code lisible et maintainable avant tout
 - **Error Handling** : Toujours gérer les états d'erreur et de chargement
 - **Types** : (À venir) Utiliser TypeScript pour la sûreté des types
 
 ### **Workflow Git**
+
 1. Créer une branche feature : `git checkout -b feature/nom-feature`
 2. Commit avec messages descriptifs : `feat: ajout du système de notifications`
 3. Push et créer une PR

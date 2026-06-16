@@ -7,6 +7,7 @@ Ce guide explique la stratégie de migration progressive de l'application **List
 ## 🎯 Objectif Final
 
 Transformer **Liste** en une **surcouche intuitive** de Coolify permettant de :
+
 - ✅ Gérer toutes les applications Coolify
 - ✅ Déclencher/arrêter/redémarrer des déploiements
 - ✅ Visualiser les logs en temps réel
@@ -59,12 +60,14 @@ Phase 5 : Migration complète
 ### **Pourquoi cette approche ?**
 
 **Avantages** :
+
 - ✅ **Pas de downtime** : L'app reste fonctionnelle pendant la migration
 - ✅ **Tests progressifs** : Chaque feature testée individuellement
 - ✅ **Rollback facile** : Pages Router reste en backup
 - ✅ **Apprentissage progressif** : Découverte de l'API Coolify étape par étape
 
 **Inconvénients** :
+
 - ⚠️ Code dupliqué temporairement
 - ⚠️ Maintenance de deux structures en parallèle
 
@@ -205,6 +208,7 @@ MONITOR_AGENT_URL=http://localhost:8000/api/stats
 Suivre le guide complet : `COOLIFY_SETUP.md`
 
 **Résumé rapide** :
+
 1. Aller sur ton instance Coolify
 2. Keys & Tokens > API Tokens
 3. Create New Token
@@ -302,6 +306,7 @@ git push origin main
 Checklist à valider avant merge :
 
 **Applications** :
+
 - [ ] Liste toutes les applications
 - [ ] Détail d'une application
 - [ ] Deploy une application
@@ -309,12 +314,14 @@ Checklist à valider avant merge :
 - [ ] Delete avec confirmation
 
 **Logs** :
+
 - [ ] Affichage logs build
 - [ ] Affichage logs runtime
 - [ ] Auto-scroll fonctionne
 - [ ] Filtres logs (error/warn/info)
 
 **Environment Variables** :
+
 - [ ] Liste toutes les env vars
 - [ ] Ajouter nouvelle variable
 - [ ] Éditer variable existante
@@ -322,18 +329,21 @@ Checklist à valider avant merge :
 - [ ] Bulk edit fonctionne
 
 **Domaines** :
+
 - [ ] Liste domaines
 - [ ] Ajouter nouveau domaine
 - [ ] Status SSL affiché
 - [ ] Test DNS fonctionne
 
 **Databases** :
+
 - [ ] Liste databases
 - [ ] Créer nouvelle database
 - [ ] Configuration backup
 - [ ] Restore backup
 
 **Error States** :
+
 - [ ] API down → message d'erreur
 - [ ] 404 → page not found
 - [ ] 500 → error boundary
@@ -344,17 +354,20 @@ Checklist à valider avant merge :
 ## 📊 Métriques de Succès
 
 ### **Performance**
+
 - ⚡ First Contentful Paint < 1.5s
 - ⚡ Time to Interactive < 3s
 - ⚡ API response time < 500ms (moyenne)
 
 ### **UX**
+
 - ✅ Toutes les actions Coolify disponibles
 - ✅ Moins de clics que dashboard Coolify natif
 - ✅ Feedback visuel sur toutes les actions
 - ✅ Messages d'erreur clairs et actionnables
 
 ### **Code Quality**
+
 - ✅ 0 erreurs TypeScript
 - ✅ 0 warnings ESLint critiques
 - ✅ Composants réutilisables modulaires
@@ -367,6 +380,7 @@ Checklist à valider avant merge :
 ### **`Module not found: Can't resolve '@/lib/...'`**
 
 **Solution** : Redémarrer le serveur dev
+
 ```bash
 # Ctrl+C puis
 npm run dev
@@ -379,6 +393,7 @@ npm run dev
 **Cause** : Data fetching échoué, props undefined
 
 **Solution** : Ajouter loading state et error boundary
+
 ```tsx
 if (!data) return <LoadingSpinner />;
 if (error) return <ErrorMessage error={error} />;
@@ -399,11 +414,13 @@ if (error) return <ErrorMessage error={error} />;
 **Cause** : Cache SWR ou browser
 
 **Solutions** :
+
 1. Hard refresh : `Cmd+Shift+R` (Mac) / `Ctrl+Shift+R` (Windows)
 2. Clear SWR cache :
+
 ```tsx
-import { mutate } from 'swr';
-mutate('/api/coolify/applications'); // Revalidate
+import { mutate } from "swr";
+mutate("/api/coolify/applications"); // Revalidate
 ```
 
 ---
@@ -411,12 +428,14 @@ mutate('/api/coolify/applications'); // Revalidate
 ## 📚 Ressources
 
 ### **Documentation**
+
 - [Next.js 15 App Router](https://nextjs.org/docs/app)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - [Coolify API Reference](https://coolify.io/docs/api-reference/authorization)
 - [SWR Documentation](https://swr.vercel.app/)
 
 ### **Fichiers de référence**
+
 - `COOLIFY_SETUP.md` - Setup API Coolify
 - `PROGRESS.md` - Tracker progression jour par jour
 - `lib/types/coolify.ts` - Types complets API
@@ -427,6 +446,7 @@ mutate('/api/coolify/applications'); // Revalidate
 ## 🎯 Next Steps
 
 ### **Pour toi (User)**
+
 1. ✅ Lire `COOLIFY_SETUP.md`
 2. ✅ Générer Bearer Token Coolify
 3. ✅ Remplir `.env.local`
@@ -434,6 +454,7 @@ mutate('/api/coolify/applications'); // Revalidate
 5. ✅ Valider que `npm run dev` démarre sans erreur
 
 ### **Pour moi (Claude)**
+
 1. Attendre validation Jour 1
 2. Démarrer Jour 2 : Infrastructure API
 3. Créer structure `/app`
