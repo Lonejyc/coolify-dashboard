@@ -61,7 +61,7 @@ async function handleRequest(
   params: { slug: string[] },
 ): Promise<NextResponse> {
   // Vérifier l'authentification
-  // @ts-ignore - authOptions type issue with Next.js 15
+  // @ts-expect-error - authOptions type issue with Next.js 15
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -85,7 +85,7 @@ async function handleRequest(
       try {
         const body = await req.json();
         options.body = JSON.stringify(body);
-      } catch (e) {
+      } catch {
         // Pas de body ou body invalide, continuer sans
       }
     }
@@ -94,13 +94,13 @@ async function handleRequest(
     const response = await coolifyFetch(url, options);
 
     // Parser la réponse
-    let data: any;
+    let data: unknown;
     const contentType = response.headers.get("content-type");
 
     if (contentType?.includes("application/json")) {
       try {
         data = await response.json();
-      } catch (e) {
+      } catch {
         data = { error: "Invalid JSON response from Coolify API" };
       }
     } else {

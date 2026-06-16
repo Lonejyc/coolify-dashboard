@@ -12,7 +12,7 @@
  * ```
  */
 
-import type { CoolifyAPIError, CoolifyAPIResponse } from "./types/coolify";
+import type { CoolifyAPIResponse } from "./types/coolify";
 
 const COOLIFY_API_BASE = process.env.COOLIFY_API_URL;
 const COOLIFY_TOKEN = process.env.COOLIFY_API_TOKEN;
@@ -106,7 +106,7 @@ export async function coolifyFetch<T>(
     let data: CoolifyAPIResponse<T>;
     try {
       data = await response.json();
-    } catch (parseError) {
+    } catch {
       // Si le parsing JSON échoue, retourner une erreur
       throw new CoolifyError(
         `Invalid JSON response from Coolify API: ${response.statusText}`,
@@ -169,7 +169,7 @@ export async function coolifyGet<T>(
  */
 export async function coolifyPost<T>(
   endpoint: string,
-  body?: Record<string, any>,
+  body?: Record<string, unknown>,
   options?: FetchOptions,
 ): Promise<T> {
   return coolifyFetch<T>(endpoint, {
@@ -184,7 +184,7 @@ export async function coolifyPost<T>(
  */
 export async function coolifyPatch<T>(
   endpoint: string,
-  body?: Record<string, any>,
+  body?: Record<string, unknown>,
   options?: FetchOptions,
 ): Promise<T> {
   return coolifyFetch<T>(endpoint, {

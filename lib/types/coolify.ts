@@ -246,7 +246,7 @@ export interface CoolifyService {
 
   // Docker compose
   docker_compose_raw?: string;
-  docker_compose?: Record<string, any>;
+  docker_compose?: Record<string, unknown>;
 
   // Relations
   environment: CoolifyEnvironment;
