@@ -1,198 +1,183 @@
-/**
- * Applications Page (App Router)
- * 
- * Main dashboard for managing Coolify applications.
- * Features:
- * - Real-time application list with SWR
- * - Deploy/Stop/Restart actions
- * - Status badges and visual indicators
- * - Responsive grid layout
- * 
- * This replaces the Pages Router /test-coolify page with enhanced functionality.
- */
-
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
-import { FiLoader, FiCheck, FiX, FiChevronDown, FiChevronUp, FiPackage, FiAlertCircle } from 'react-icons/fi';
+import { Search, ServerOff, Wifi, WifiOff, RefreshCw } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ApplicationCard from '../components/coolify/ApplicationCard';
 import { useCoolifyApplications } from '../hooks/useCoolifyApplications';
 
+const STATUS_FILTERS = ['all', 'running', 'stopped', 'restarting', 'degraded', 'exited'] as const;
+type StatusFilter = typeof STATUS_FILTERS[number];
+
+function CardSkeleton() {
+  return (
+    <div className="bg-black/40 backdrop-blur-md border border-zinc-800/50 rounded-xl p-5 flex flex-col gap-4 animate-pulse">
+      <div className="flex items-center justify-between">
+        <div className="h-4 bg-zinc-800 rounded w-2/5" />
+        <div className="h-3 bg-zinc-800 rounded w-16" />
+      </div>
+      <div className="flex flex-col gap-2">
+        <div className="h-3 bg-zinc-800/60 rounded w-3/4" />
+        <div className="h-3 bg-zinc-800/60 rounded w-1/2" />
+        <div className="h-5 bg-zinc-800/40 rounded w-1/4 mt-1" />
+      </div>
+      <div className="h-7 bg-zinc-800/30 rounded-lg mt-auto" />
+      <div className="h-px bg-zinc-800/50" />
+      <div className="flex justify-between">
+        <div className="h-3 bg-zinc-800/40 rounded w-1/3" />
+        <div className="h-3 bg-zinc-800/40 rounded w-1/4" />
+      </div>
+    </div>
+  );
+}
+
 export default function ApplicationsPage() {
-  const { data: session, status } = useSession();
-  const [showErrorDetails, setShowErrorDetails] = useState(false);
+  const { status } = useSession();
+  const [search,       setSearch]       = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
-  // Redirect to sign in if not authenticated
-  if (status === 'unauthenticated') {
-    redirect('/api/auth/signin');
-  }
+  if (status === 'unauthenticated') redirect('/api/auth/signin');
 
-  // Fetch applications with custom hook
-  const { data, error, isLoading, mutate } = useCoolifyApplications();
+  const { data, error, isLoading, mutate, isValidating } = useCoolifyApplications();
 
-  /**
-   * Handle action completion
-   * Revalidates the applications list after an action (deploy/stop/restart)
-   */
-  const handleActionComplete = () => {
-    mutate();
-  };
+  const filtered = useMemo(() => {
+    if (!data?.applications) return [];
+    return data.applications.filter(app => {
+      const q = search.toLowerCase();
+      const matchSearch = !q
+        || app.name.toLowerCase().includes(q)
+        || app.fqdn?.toLowerCase().includes(q)
+        || app.git_repository?.toLowerCase().includes(q);
+      const matchStatus = statusFilter === 'all' || app.status === statusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [data?.applications, search, statusFilter]);
 
   return (
-    <div className="min-h-screen bg-grain-background bg-cover text-slate-300 flex flex-col">
+    <div className="min-h-screen bg-grain-background bg-cover text-zinc-300 flex flex-col">
       <Header />
-      <Toaster position="top-right" />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: '#18181b',
+            color: '#e4e4e7',
+            border: '1px solid #3f3f46',
+            fontSize: '13px',
+          },
+        }}
+      />
 
-      <main className="flex-1 p-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-slate-100 mb-2">
-              Coolify Applications
-            </h1>
-            <p className="text-slate-400">
-              Manage your applications with enhanced controls
-            </p>
-          </div>
+      {/* ── Discrete connection banner ── */}
+      {data && !isLoading && (
+        <div className={`flex items-center gap-2 px-6 py-1.5 text-xs font-mono border-b transition-colors ${
+          data.connected
+            ? 'bg-emerald-500/[0.04] border-emerald-500/10 text-emerald-600'
+            : 'bg-red-500/[0.04] border-red-500/10 text-red-600'
+        }`}>
+          {data.connected
+            ? <Wifi className="w-3 h-3" />
+            : <WifiOff className="w-3 h-3" />}
+          <span>
+            {data.connected
+              ? `Coolify ${data.version} · ${data.count} application${data.count !== 1 ? 's' : ''} · synced ${new Date(data.timestamp).toLocaleTimeString('en-US')}`
+              : `Disconnected — ${data.error}`}
+          </span>
+        </div>
+      )}
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <FiLoader className="animate-spin text-4xl text-emerald-500 mx-auto mb-4" />
-              <p className="text-slate-400">Connecting to Coolify...</p>
-            </div>
-          </div>
-        )}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-10">
 
-        {/* Error State */}
-        {error && (
-          <div className="bg-red-900/20 backdrop-blur-sm border border-red-500/30 rounded-lg p-6">
-            <div className="flex items-start gap-3">
-              <FiX className="text-2xl text-red-500 flex-shrink-0 mt-1" />
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-red-400 mb-2">
-                  Connection Failed
-                </h3>
-                <p className="text-red-300 mb-4">
-                  {error.message || 'An error occurred while connecting to Coolify.'}
-                </p>
-
-                <div className="mt-4 text-sm text-slate-400">
-                  <div className="flex items-center gap-2 mb-2">
-                    <FiAlertCircle className="text-yellow-500" />
-                    <p className="font-medium">Suggestions:</p>
-                  </div>
-                  <ul className="list-disc list-inside space-y-1 text-xs ml-6">
-                    <li>Verify that COOLIFY_API_URL is correct in .env.local</li>
-                    <li>Verify that COOLIFY_API_TOKEN is valid</li>
-                    <li>Verify that your Coolify instance is accessible</li>
-                    <li>Test with: curl https://your-instance.com/api/v1/version</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Success State */}
-        {data && data.connected && (
-          <>
-            {/* Connection Status Card */}
-            <div className="bg-emerald-900/20 backdrop-blur-sm border border-emerald-500/30 rounded-lg p-6 mb-8">
-              <div className="flex items-start gap-3">
-                <FiCheck className="text-2xl text-emerald-500 flex-shrink-0 mt-1" />
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-emerald-400 mb-1">
-                    Connected to Coolify
-                  </h3>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300">
-                    {data.version && (
-                      <span>
-                        Version: <span className="font-mono text-emerald-400">{data.version}</span>
-                      </span>
-                    )}
-                    <span className="text-slate-500">•</span>
-                    <span>
-                      Applications: <span className="font-semibold text-emerald-400">{data.count}</span>
-                    </span>
-                    <span className="text-slate-500">•</span>
-                    <span className="text-xs text-slate-500">
-                      Last update: {new Date(data.timestamp).toLocaleTimeString('en-US')}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Applications List */}
-            <div>
-              <h2 className="text-2xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-                <FiPackage className="text-emerald-400" />
-                Applications
-                <span className="text-sm font-normal text-slate-500">({data.count})</span>
-              </h2>
-
-              {data.count === 0 ? (
-                <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-lg p-8 text-center">
-                  <p className="text-slate-400">No applications found in Coolify.</p>
-                  <p className="text-sm text-slate-500 mt-2">
-                    Create your first application from the Coolify dashboard.
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {data.applications.map((app) => (
-                    <ApplicationCard
-                      key={app.uuid}
-                      app={app}
-                      onActionComplete={handleActionComplete}
-                    />
-                  ))}
-                </div>
+        {/* ── Page header ── */}
+        <div className="flex flex-col gap-6 mb-10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-3">
+              <h1 className="text-2xl font-semibold text-zinc-50 tracking-tight">Applications</h1>
+              {data && !isLoading && (
+                <span className="px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs text-zinc-500 font-mono tabular-nums">
+                  {filtered.length}{(statusFilter !== 'all' || search) ? `/${data.count}` : ''}
+                </span>
               )}
             </div>
-          </>
-        )}
+            <button
+              onClick={() => mutate()}
+              disabled={isValidating}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/40 border border-zinc-800/50 text-zinc-500 text-xs hover:text-zinc-300 hover:border-zinc-700 transition-all duration-150 disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3 h-3 ${isValidating ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+          </div>
 
-        {/* Error State (API returned connected: false) */}
-        {data && !data.connected && !error && (
-          <div className="bg-red-900/20 backdrop-blur-sm border border-red-500/30 rounded-lg p-6">
-            <div className="flex items-start gap-3">
-              <FiX className="text-2xl text-red-500 flex-shrink-0 mt-1" />
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-red-400 mb-2">
-                  Connection Failed
-                </h3>
-                <p className="text-red-300 mb-4">
-                  {data.error || 'An error occurred while connecting to Coolify.'}
-                </p>
+          {/* Search + status filter */}
+          <div className="flex flex-wrap gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-600 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search by name, URL, repo…"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-72 pl-9 pr-4 py-2 bg-black/40 backdrop-blur-md border border-zinc-800/50 rounded-lg text-sm text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-emerald-500/40 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200"
+              />
+            </div>
 
+            <div className="flex items-center gap-1 bg-black/40 backdrop-blur-md border border-zinc-800/50 rounded-lg px-1.5 py-1.5">
+              {STATUS_FILTERS.map(s => (
                 <button
-                  onClick={() => setShowErrorDetails(!showErrorDetails)}
-                  className="inline-flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors"
+                  key={s}
+                  onClick={() => setStatusFilter(s)}
+                  className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-all duration-150 ${
+                    statusFilter === s
+                      ? 'bg-zinc-800 text-zinc-100'
+                      : 'text-zinc-600 hover:text-zinc-300'
+                  }`}
                 >
-                  {showErrorDetails ? <FiChevronUp /> : <FiChevronDown />}
-                  {showErrorDetails ? 'Hide' : 'Show'} technical details
+                  {s}
                 </button>
-
-                {showErrorDetails && data.details && (
-                  <div className="mt-4 p-4 bg-slate-900/50 rounded border border-red-500/20">
-                    <pre className="text-xs text-slate-400 overflow-x-auto">
-                      {JSON.stringify(data.details, null, 2)}
-                    </pre>
-                  </div>
-                )}
-              </div>
+              ))}
             </div>
           </div>
-        )}
         </div>
+
+        {/* ── Loading skeletons ── */}
+        {isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)}
+          </div>
+        )}
+
+        {/* ── Error ── */}
+        {error && !isLoading && (
+          <div className="flex items-center gap-3 p-4 bg-red-500/5 border border-red-500/20 rounded-xl text-sm text-red-400 font-mono">
+            <ServerOff className="w-4 h-4 shrink-0" />
+            {error.message}
+          </div>
+        )}
+
+        {/* ── Grid ── */}
+        {!isLoading && !error && (
+          filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 text-zinc-700 text-sm font-mono gap-2">
+              <span className="text-2xl">∅</span>
+              <span>
+                {search || statusFilter !== 'all'
+                  ? 'No applications match your filters.'
+                  : 'No applications found in Coolify.'}
+              </span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filtered.map(app => (
+                <ApplicationCard key={app.uuid} app={app} onActionComplete={() => mutate()} />
+              ))}
+            </div>
+          )
+        )}
       </main>
 
       <Footer />

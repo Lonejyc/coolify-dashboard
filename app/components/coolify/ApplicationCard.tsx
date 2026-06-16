@@ -1,273 +1,162 @@
-/**
- * ApplicationCard Component
- * 
- * Enhanced card component for displaying Coolify applications with action buttons.
- * Features: Deploy, Stop, Restart actions with loading states and error handling.
- */
-
 'use client';
 
 import { useState } from 'react';
-import { FiExternalLink, FiGithub, FiPlay, FiSquare, FiRefreshCw, FiLoader } from 'react-icons/fi';
-import StatusBadge from './StatusBadge';
+import { ExternalLink, GitBranch, Play, Square, RefreshCw, Loader2 } from 'lucide-react';
 import { CoolifyApplication } from '@/lib/types/coolify';
 import toast from 'react-hot-toast';
 
-interface ApplicationCardProps {
+const STATUS_CONFIG = {
+  running:    { label: 'Running',    dot: 'bg-emerald-400', ping: 'bg-emerald-400', text: 'text-emerald-400', animate: true  },
+  stopped:    { label: 'Stopped',    dot: 'bg-red-500',     ping: '',               text: 'text-red-400',     animate: false },
+  exited:     { label: 'Exited',     dot: 'bg-red-500',     ping: '',               text: 'text-red-400',     animate: false },
+  restarting: { label: 'Restarting', dot: 'bg-blue-400',    ping: 'bg-blue-400',    text: 'text-blue-400',    animate: true  },
+  degraded:   { label: 'Degraded',   dot: 'bg-yellow-400',  ping: 'bg-yellow-400',  text: 'text-yellow-400',  animate: true  },
+  unknown:    { label: 'Unknown',    dot: 'bg-zinc-600',    ping: '',               text: 'text-zinc-500',    animate: false },
+} as const;
+
+interface Props {
   app: CoolifyApplication;
   onActionComplete?: () => void;
 }
 
-const ApplicationCard = ({ app, onActionComplete }: ApplicationCardProps) => {
-  const [isDeploying, setIsDeploying] = useState(false);
-  const [isStopping, setIsStopping] = useState(false);
-  const [isRestarting, setIsRestarting] = useState(false);
+export default function ApplicationCard({ app, onActionComplete }: Props) {
+  const [isDeploying,   setIsDeploying]   = useState(false);
+  const [isStopping,    setIsStopping]    = useState(false);
+  const [isRestarting,  setIsRestarting]  = useState(false);
 
-  // Parse status if it comes as "state:health" format
-  const mainStatus = app.status?.split(':')[0] || 'unknown';
+  const cfg    = STATUS_CONFIG[app.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.unknown;
+  const isBusy = isDeploying || isStopping || isRestarting;
+  const isStopped = app.status === 'stopped' || app.status === 'exited';
 
-  /**
-   * Trigger deployment for the application
-   */
-  const handleDeploy = async () => {
-    setIsDeploying(true);
-    
+  const callAction = async (type: 'deploy' | 'stop' | 'restart') => {
+    const setMap = { deploy: setIsDeploying, stop: setIsStopping, restart: setIsRestarting };
+    const msgMap = {
+      deploy:  `Deploying ${app.name}…`,
+      stop:    `${app.name} stopped`,
+      restart: `${app.name} restarting…`,
+    };
+    setMap[type](true);
     try {
-      const response = await fetch(`/api/coolify/applications/${app.uuid}/deploy`, {
-        method: 'POST',
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Deployment failed');
-      }
-
-      toast.success(`Deployment started for ${app.name}`);
-      
-      // Refresh application list after action
-      if (onActionComplete) {
-        setTimeout(onActionComplete, 1000);
-      }
-    } catch (error: any) {
-      toast.error(`Deploy failed: ${error.message}`);
-      console.error('Deploy error:', error);
+      const res  = await fetch(`/api/coolify/applications/${app.uuid}/${type}`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || `${type} failed`);
+      toast.success(msgMap[type]);
+      setTimeout(() => onActionComplete?.(), 1500);
+    } catch (e: any) {
+      toast.error(e.message);
     } finally {
-      setIsDeploying(false);
+      setMap[type](false);
     }
   };
 
-  /**
-   * Stop the application
-   */
-  const handleStop = async () => {
-    setIsStopping(true);
-    
-    try {
-      const response = await fetch(`/api/coolify/applications/${app.uuid}/stop`, {
-        method: 'POST',
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Stop failed');
-      }
-
-      toast.success(`${app.name} stopped`);
-      
-      if (onActionComplete) {
-        setTimeout(onActionComplete, 1000);
-      }
-    } catch (error: any) {
-      toast.error(`Stop failed: ${error.message}`);
-      console.error('Stop error:', error);
-    } finally {
-      setIsStopping(false);
-    }
-  };
-
-  /**
-   * Restart the application
-   */
-  const handleRestart = async () => {
-    setIsRestarting(true);
-    
-    try {
-      const response = await fetch(`/api/coolify/applications/${app.uuid}/restart`, {
-        method: 'POST',
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Restart failed');
-      }
-
-      toast.success(`${app.name} restarting...`);
-      
-      if (onActionComplete) {
-        setTimeout(onActionComplete, 1000);
-      }
-    } catch (error: any) {
-      toast.error(`Restart failed: ${error.message}`);
-      console.error('Restart error:', error);
-    } finally {
-      setIsRestarting(false);
-    }
-  };
-
-  // Border color based on status
-  const statusColors: Record<string, string> = {
-    running: 'border-l-emerald-500 hover:border-emerald-500/50',
-    stopped: 'border-l-red-500 hover:border-red-500/50',
-    degraded: 'border-l-yellow-500 hover:border-yellow-500/50',
-    restarting: 'border-l-blue-500 hover:border-blue-500/50',
-    exited: 'border-l-slate-500 hover:border-slate-500/50',
-    unknown: 'border-l-slate-500 hover:border-slate-500/50',
-  };
-  
-  const borderColor = statusColors[mainStatus] || statusColors.unknown;
+  const fqdn = app.fqdn?.replace(/^https?:\/\//, '');
+  const repo = app.git_repository?.split('/').slice(-2).join('/');
 
   return (
-    <div
-      className={`
-        group relative
-        bg-gradient-to-br from-slate-800/50 to-slate-900/50 
-        backdrop-blur-sm 
-        border-l-4 border-t border-r border-b
-        border-slate-700/50
-        ${borderColor}
-        rounded-lg p-6
-        hover:shadow-xl hover:shadow-emerald-500/5
-        transition-all duration-300
-        hover:-translate-y-1
-      `}
-    >
-      {/* Header: Name + Status */}
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-xl font-bold text-slate-100 truncate mb-1 group-hover:text-emerald-400 transition-colors">
+    <div className="group relative flex flex-col gap-4 bg-black/40 backdrop-blur-md border border-zinc-800/50 rounded-xl p-5 hover:border-zinc-700/80 transition-all duration-300 overflow-hidden">
+
+      {/* Hover glow */}
+      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-emerald-500/0 to-transparent group-hover:from-emerald-500/[0.04] transition-all duration-500 pointer-events-none" />
+
+      {/* ── Header ── */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-sm font-semibold text-zinc-100 truncate group-hover:text-emerald-400 transition-colors duration-200">
             {app.name}
           </h3>
           {app.description && (
-            <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed">
-              {app.description}
-            </p>
+            <p className="text-xs text-zinc-600 mt-0.5 line-clamp-1">{app.description}</p>
           )}
         </div>
-        <StatusBadge status={mainStatus} size="md" />
+
+        {/* Status dot ping */}
+        <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+          <div className="relative flex items-center justify-center w-3 h-3">
+            {cfg.animate && (
+              <span className={`absolute inline-flex h-full w-full rounded-full ${cfg.ping} opacity-40 animate-ping`} />
+            )}
+            <span className={`relative inline-flex rounded-full h-2 w-2 ${cfg.dot}`} />
+          </div>
+          <span className={`text-xs font-medium ${cfg.text}`}>{cfg.label}</span>
+        </div>
       </div>
 
-      {/* Info with icons */}
-      <div className="space-y-3 text-sm mb-4">
-        {/* FQDN */}
-        {app.fqdn && (
-          <div className="flex items-center gap-2.5 text-slate-400 group/link">
-            <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded bg-emerald-500/10 text-emerald-400">
-              <FiExternalLink className="text-xs" />
-            </div>
-            <a
-              href={app.fqdn}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="truncate hover:text-emerald-400 transition-colors font-medium"
-            >
-              {app.fqdn.replace(/^https?:\/\//, '')}
-            </a>
-          </div>
+      {/* ── Info ── */}
+      <div className="flex flex-col gap-2">
+        {fqdn && (
+          <a
+            href={app.fqdn}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-zinc-500 hover:text-emerald-400 transition-colors duration-150 group/link"
+          >
+            <ExternalLink className="w-3.5 h-3.5 shrink-0 group-hover/link:text-emerald-500" />
+            <span className="text-xs font-mono truncate">{fqdn}</span>
+          </a>
         )}
-
-        {/* Git Repository */}
-        {app.git_repository && (
-          <div className="flex items-center gap-2.5 text-slate-400">
-            <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded bg-slate-500/10 text-slate-400">
-              <FiGithub className="text-xs" />
-            </div>
-            <span className="truncate text-xs font-mono">
-              {app.git_repository.split('/').slice(-2).join('/')}
+        {repo && (
+          <div className="flex items-center gap-2 text-zinc-600">
+            <GitBranch className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-xs font-mono truncate">
+              {repo}
               {app.git_branch && (
-                <span className="ml-1 text-emerald-400">
-                  @ {app.git_branch}
-                </span>
+                <span className="text-zinc-700"> @ {app.git_branch}</span>
               )}
             </span>
           </div>
         )}
-
-        {/* Build Pack Badge */}
         {app.build_pack && (
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-md bg-slate-700/50 text-slate-300 font-mono border border-slate-600/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <div>
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-mono bg-zinc-900/60 text-zinc-400 border border-zinc-800">
+              <span className="w-1 h-1 rounded-full bg-emerald-500/80 shrink-0" />
               {app.build_pack}
             </span>
           </div>
         )}
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-2 mb-4">
+      {/* ── Actions (revealed on hover) ── */}
+      <div className="flex items-center gap-2 opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
         <button
-          onClick={handleDeploy}
-          disabled={isDeploying || isRestarting || isStopping}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/30 hover:border-emerald-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          title="Deploy application"
+          onClick={() => callAction('deploy')}
+          disabled={isBusy}
+          title="Deploy"
+          className="flex flex-1 items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium hover:bg-emerald-500/20 hover:border-emerald-500/40 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150"
         >
-          {isDeploying ? (
-            <>
-              <FiLoader className="animate-spin" />
-              <span>Deploying...</span>
-            </>
-          ) : (
-            <>
-              <FiPlay />
-              <span>Deploy</span>
-            </>
-          )}
+          {isDeploying
+            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            : <Play className="w-3.5 h-3.5" />}
+          Deploy
         </button>
-
         <button
-          onClick={handleRestart}
-          disabled={isDeploying || isRestarting || isStopping || mainStatus === 'stopped'}
-          className="flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 hover:border-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          title="Restart application"
+          onClick={() => callAction('restart')}
+          disabled={isBusy || isStopped}
+          title="Restart"
+          className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 hover:border-blue-500/40 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150"
         >
-          {isRestarting ? (
-            <FiLoader className="animate-spin" />
-          ) : (
-            <FiRefreshCw />
-          )}
+          {isRestarting
+            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            : <RefreshCw className="w-3.5 h-3.5" />}
         </button>
-
         <button
-          onClick={handleStop}
-          disabled={isDeploying || isRestarting || isStopping || mainStatus === 'stopped'}
-          className="flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-red-600/20 text-red-400 border border-red-500/30 hover:bg-red-600/30 hover:border-red-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          title="Stop application"
+          onClick={() => callAction('stop')}
+          disabled={isBusy || isStopped}
+          title="Stop"
+          className="p-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/40 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150"
         >
-          {isStopping ? (
-            <FiLoader className="animate-spin" />
-          ) : (
-            <FiSquare />
-          )}
+          {isStopping
+            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            : <Square className="w-3.5 h-3.5" />}
         </button>
       </div>
 
-      {/* Footer: Last Update */}
+      {/* ── Footer ── */}
       {app.updated_at && (
-        <div className="pt-3 mt-3 border-t border-slate-700/30 flex items-center justify-between text-xs text-slate-500">
+        <div className="flex items-center justify-between text-xs text-zinc-700 font-mono border-t border-zinc-800/50 pt-3 mt-auto">
           <span>Updated {new Date(app.updated_at).toLocaleDateString('en-US')}</span>
-          <span className="text-slate-600">#{app.uuid.slice(0, 8)}</span>
+          <span>#{app.uuid.slice(0, 8)}</span>
         </div>
       )}
-
-      {/* Hover Glow Effect */}
-      <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-        <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-emerald-500/5 to-transparent"></div>
-      </div>
     </div>
   );
-};
-
-export default ApplicationCard;
+}
