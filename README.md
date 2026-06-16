@@ -84,22 +84,23 @@ Liste est une interface de contrôle moderne qui offre une vue d'ensemble en tem
 L'objectif à terme est de transformer ce dashboard en **Control Plane complet** pour Coolify :
 
 #### Phase 1 : Intégration Coolify API
-- [ ] **Connexion Coolify REST API** : Proxy routes vers l'instance Coolify
-- [ ] **Chargement dynamique des projets** : Remplacer `projects.json` par des appels API
-- [ ] **Status réels** : Récupération automatique de l'état des containers Docker
+- [x] **Connexion Coolify REST API** : Proxy routes dynamiques vers l'instance Coolify (`lib/coolify-client.ts`)
+- [x] **Chargement dynamique des projets** : Appels API Coolify via `useCoolifyApplications` hook
+- [x] **Status réels** : Récupération automatique de l'état des containers Docker (parsing du format composite Coolify)
 - [ ] **Health checks automatisés** : Ping/latency en temps réel pour chaque service
 
 #### Phase 2 : Gestion des Déploiements
-- [ ] **Trigger deployments** : Interface pour lancer/arrêter/redémarrer des applications
+- [x] **Trigger deployments** : Boutons d'action sur la page applications (lancer/arrêter/redémarrer)
 - [ ] **Logs en temps réel** : Visualisation des logs Coolify directement dans l'UI
 - [ ] **Notifications** : Alertes en cas de déploiement échoué
 - [ ] **Templates Nixpacks/Docker** : Configuration automatisée pour éviter les erreurs
 
-#### Phase 3 : Migration Technique
-- [ ] **Migrer vers App Router** (Next.js 13+)
-- [ ] **Conversion TypeScript** : Refactoriser `.js` → `.ts/.tsx`
-- [ ] **Intégrer Shadcn/UI** : Remplacer composants custom par design system Shadcn
-- [ ] **Ajouter Lucide React** : Remplacer React Icons par Lucide
+#### Phase 3 : Migration Technique ✅
+- [x] **Migré vers App Router** (Next.js 15)
+- [x] **Conversion TypeScript** : Projet entièrement en `.ts/.tsx`
+- [x] **Intégré Shadcn/UI** : Design system Shadcn en place
+- [x] **Ajouté Lucide React** : Icônes Lucide, suppression de React Icons
+- [x] **Header/Footer** : Composants globaux de layout
 
 #### Phase 4 : Monitoring Avancé
 - [ ] **Dashboard multi-serveurs** : Support de plusieurs instances Coolify
