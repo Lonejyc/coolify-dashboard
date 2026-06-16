@@ -1,14 +1,14 @@
 /**
  * Custom Hook: useCoolifyApplications
- * 
+ *
  * Fetches Coolify applications with version info using SWR.
  * Combines /version and /applications endpoints for dashboard display.
  */
 
-'use client';
+"use client";
 
-import useSWR from 'swr';
-import { CoolifyApplication } from '@/lib/types/coolify';
+import useSWR from "swr";
+import { CoolifyApplication } from "@/lib/types/coolify";
 
 interface CoolifyTestResponse {
   connected: boolean;
@@ -24,13 +24,13 @@ const fetcher = async (): Promise<CoolifyTestResponse> => {
   try {
     // Fetch version and applications in parallel
     const [versionRes, appsRes] = await Promise.all([
-      fetch('/api/coolify/version'),
-      fetch('/api/coolify/applications'),
+      fetch("/api/coolify/version"),
+      fetch("/api/coolify/applications"),
     ]);
 
     // Check for errors
     if (!versionRes.ok && !appsRes.ok) {
-      throw new Error('Failed to connect to Coolify API');
+      throw new Error("Failed to connect to Coolify API");
     }
 
     // Parse responses
@@ -38,17 +38,19 @@ const fetcher = async (): Promise<CoolifyTestResponse> => {
     const appsData = appsRes.ok ? await appsRes.json() : { data: [] };
 
     // Extract applications array
-    const applications = Array.isArray(appsData) ? appsData : (appsData.data || []);
+    const applications = Array.isArray(appsData)
+      ? appsData
+      : appsData.data || [];
 
     // Parse status format (Coolify returns "state:health" like "running:unhealthy")
     const parsedApplications = applications.map((app: any) => ({
       ...app,
-      status: app.status?.split(':')[0] || 'unknown',
+      status: app.status?.split(":")[0] || "unknown",
     }));
 
     return {
       connected: true,
-      version: versionData?.version || 'unknown',
+      version: versionData?.version || "unknown",
       count: parsedApplications.length,
       applications: parsedApplications,
       timestamp: new Date().toISOString(),
@@ -56,7 +58,7 @@ const fetcher = async (): Promise<CoolifyTestResponse> => {
   } catch (error: any) {
     return {
       connected: false,
-      error: error.message || 'Failed to fetch applications',
+      error: error.message || "Failed to fetch applications",
       count: 0,
       applications: [],
       timestamp: new Date().toISOString(),
@@ -65,13 +67,9 @@ const fetcher = async (): Promise<CoolifyTestResponse> => {
 };
 
 export function useCoolifyApplications() {
-  return useSWR<CoolifyTestResponse>(
-    'coolify-applications',
-    fetcher,
-    {
-      refreshInterval: 5000, // Refresh every 5 seconds
-      revalidateOnFocus: true,
-      revalidateOnReconnect: true,
-    }
-  );
+  return useSWR<CoolifyTestResponse>("coolify-applications", fetcher, {
+    refreshInterval: 5000, // Refresh every 5 seconds
+    revalidateOnFocus: true,
+    revalidateOnReconnect: true,
+  });
 }

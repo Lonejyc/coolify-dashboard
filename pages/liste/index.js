@@ -1,13 +1,31 @@
-import { getSession } from 'next-auth/react';
-import Link from 'next/link';
-import Layout from '../../components/Layout';
-import { ExternalLink, GitFork, Plus } from 'lucide-react';
-import PROJECTS from '../../data/projects.json';
+import { getSession } from "next-auth/react";
+import Link from "next/link";
+import Layout from "../../components/Layout";
+import { ExternalLink, GitFork, Plus } from "lucide-react";
+import PROJECTS from "../../data/projects.json";
 
 const STATUS_CONFIG = {
-  ONLINE:  { label: 'Online',  dot: 'bg-emerald-400', ping: 'bg-emerald-400', text: 'text-emerald-400', animate: true  },
-  DEV:     { label: 'Dev',     dot: 'bg-yellow-400',  ping: 'bg-yellow-400',  text: 'text-yellow-400',  animate: true  },
-  OFFLINE: { label: 'Offline', dot: 'bg-red-500',     ping: '',               text: 'text-red-400',     animate: false },
+  ONLINE: {
+    label: "Online",
+    dot: "bg-emerald-400",
+    ping: "bg-emerald-400",
+    text: "text-emerald-400",
+    animate: true,
+  },
+  DEV: {
+    label: "Dev",
+    dot: "bg-yellow-400",
+    ping: "bg-yellow-400",
+    text: "text-yellow-400",
+    animate: true,
+  },
+  OFFLINE: {
+    label: "Offline",
+    dot: "bg-red-500",
+    ping: "",
+    text: "text-red-400",
+    animate: false,
+  },
 };
 
 function StatusDot({ status }) {
@@ -16,9 +34,13 @@ function StatusDot({ status }) {
     <div className="flex items-center gap-1.5">
       <div className="relative flex items-center justify-center w-3 h-3">
         {cfg.animate && (
-          <span className={`absolute inline-flex h-full w-full rounded-full ${cfg.ping} opacity-40 animate-ping`} />
+          <span
+            className={`absolute inline-flex h-full w-full rounded-full ${cfg.ping} opacity-40 animate-ping`}
+          />
         )}
-        <span className={`relative inline-flex rounded-full h-2 w-2 ${cfg.dot}`} />
+        <span
+          className={`relative inline-flex rounded-full h-2 w-2 ${cfg.dot}`}
+        />
       </div>
       <span className={`text-xs font-medium ${cfg.text}`}>{cfg.label}</span>
     </div>
@@ -37,10 +59,11 @@ export default function Liste({ session }) {
   return (
     <Layout title="Projects">
       <div className="w-full max-w-6xl">
-
         {/* Page header */}
         <div className="flex items-baseline gap-3 mb-10">
-          <h1 className="text-2xl font-semibold text-zinc-50 tracking-tight">Projects</h1>
+          <h1 className="text-2xl font-semibold text-zinc-50 tracking-tight">
+            Projects
+          </h1>
           <span className="px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs text-zinc-500 font-mono">
             {PROJECTS.length}
           </span>
@@ -71,7 +94,7 @@ export default function Liste({ session }) {
 
               {/* Tech tags */}
               <div className="flex flex-wrap gap-1.5">
-                {project.tech.map(t => (
+                {project.tech.map((t) => (
                   <span
                     key={t}
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-zinc-900/60 text-zinc-400 border border-zinc-800"
@@ -87,7 +110,9 @@ export default function Liste({ session }) {
                 {project.link && (
                   <a
                     href={project.link}
-                    target={project.link.startsWith('http') ? '_blank' : '_self'}
+                    target={
+                      project.link.startsWith("http") ? "_blank" : "_self"
+                    }
                     rel="noopener noreferrer"
                     className="flex flex-1 items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium hover:bg-emerald-500/20 hover:border-emerald-500/40 transition-all duration-150"
                   >
@@ -122,7 +147,9 @@ export default function Liste({ session }) {
             <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:border-zinc-700 transition-all duration-200">
               <Plus className="w-4 h-4" />
             </div>
-            <p className="text-[10px] font-mono uppercase tracking-widest">Deploy New</p>
+            <p className="text-[10px] font-mono uppercase tracking-widest">
+              Deploy New
+            </p>
           </div>
         </div>
       </div>
@@ -133,7 +160,7 @@ export default function Liste({ session }) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   if (!session) {
-    return { redirect: { destination: '/dashboard', permanent: false } };
+    return { redirect: { destination: "/dashboard", permanent: false } };
   }
   return { props: { session } };
 }

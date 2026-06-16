@@ -8,9 +8,24 @@
 // Common Types
 // ============================================
 
-export type ResourceStatus = 'running' | 'stopped' | 'degraded' | 'restarting' | 'exited';
-export type DeploymentStatus = 'queued' | 'in_progress' | 'finished' | 'failed' | 'cancelled';
-export type BuildPack = 'nixpacks' | 'dockerfile' | 'dockercompose' | 'static' | 'dockerimage';
+export type ResourceStatus =
+  | "running"
+  | "stopped"
+  | "degraded"
+  | "restarting"
+  | "exited";
+export type DeploymentStatus =
+  | "queued"
+  | "in_progress"
+  | "finished"
+  | "failed"
+  | "cancelled";
+export type BuildPack =
+  | "nixpacks"
+  | "dockerfile"
+  | "dockercompose"
+  | "static"
+  | "dockerimage";
 
 // ============================================
 // Environment & Project Types
@@ -60,13 +75,13 @@ export interface CoolifyApplication {
   description?: string;
   fqdn?: string;
   status: ResourceStatus;
-  
+
   // Git configuration
   git_repository?: string;
   git_branch?: string;
   git_commit_sha?: string;
   git_full_url?: string;
-  
+
   // Build configuration
   build_pack: BuildPack;
   dockerfile_location?: string;
@@ -74,24 +89,24 @@ export interface CoolifyApplication {
   install_command?: string;
   build_command?: string;
   start_command?: string;
-  
+
   // Runtime configuration
   ports_exposes?: string;
   ports_mappings?: string;
   base_directory?: string;
   publish_directory?: string;
-  
+
   // Health check
   health_check_enabled?: boolean;
   health_check_path?: string;
   health_check_port?: number;
   health_check_interval?: number;
-  
+
   // Relations
   environment: CoolifyEnvironment;
   destination: CoolifyDestination;
   server: CoolifyServer;
-  
+
   // Timestamps
   created_at: string;
   updated_at: string;
@@ -113,19 +128,19 @@ export interface CoolifyDeployment {
   uuid: string;
   application_uuid: string;
   status: DeploymentStatus;
-  
+
   // Git info
   commit_sha?: string;
   commit_message?: string;
   pull_request_id?: number;
-  
+
   // Timing
   started_at?: string;
   finished_at?: string;
-  
+
   // Logs
   current_process_id?: string;
-  
+
   created_at: string;
   updated_at: string;
 }
@@ -151,15 +166,15 @@ export interface CoolifyEnvironmentVariable {
 // Database Types
 // ============================================
 
-export type DatabaseType = 
-  | 'postgresql' 
-  | 'mysql' 
-  | 'mariadb' 
-  | 'mongodb' 
-  | 'redis' 
-  | 'keydb' 
-  | 'dragonfly'
-  | 'clickhouse';
+export type DatabaseType =
+  | "postgresql"
+  | "mysql"
+  | "mariadb"
+  | "mongodb"
+  | "redis"
+  | "keydb"
+  | "dragonfly"
+  | "clickhouse";
 
 export interface CoolifyDatabase {
   uuid: string;
@@ -167,14 +182,14 @@ export interface CoolifyDatabase {
   description?: string;
   type: DatabaseType;
   status: ResourceStatus;
-  
+
   // Connection details
   internal_db_url?: string;
   external_db_url?: string;
-  
+
   // Configuration
   image: string;
-  
+
   // Postgres specific
   postgres_user?: string;
   postgres_password?: string;
@@ -182,30 +197,30 @@ export interface CoolifyDatabase {
   postgres_initdb_args?: string;
   postgres_host_auth_method?: string;
   postgres_conf?: string;
-  
+
   // MySQL/MariaDB specific
   mysql_root_password?: string;
   mysql_user?: string;
   mysql_password?: string;
   mysql_database?: string;
   mysql_conf?: string;
-  
+
   // MongoDB specific
   mongo_initdb_root_username?: string;
   mongo_initdb_root_password?: string;
   mongo_initdb_database?: string;
   mongo_conf?: string;
-  
+
   // Backup configuration
   is_scheduled_backup_enabled?: boolean;
   backup_frequency?: string;
   backup_retention?: number;
-  
+
   // Relations
   environment: CoolifyEnvironment;
   destination: CoolifyDestination;
   server: CoolifyServer;
-  
+
   created_at: string;
   updated_at: string;
 }
@@ -228,16 +243,16 @@ export interface CoolifyService {
   description?: string;
   status: ResourceStatus;
   fqdn?: string;
-  
+
   // Docker compose
   docker_compose_raw?: string;
   docker_compose?: Record<string, any>;
-  
+
   // Relations
   environment: CoolifyEnvironment;
   destination: CoolifyDestination;
   server: CoolifyServer;
-  
+
   created_at: string;
   updated_at: string;
 }
@@ -249,7 +264,7 @@ export interface CoolifyService {
 export interface CoolifyLogLine {
   timestamp: string;
   message: string;
-  level?: 'info' | 'warn' | 'error' | 'debug';
+  level?: "info" | "warn" | "error" | "debug";
 }
 
 // ============================================
@@ -312,7 +327,7 @@ export interface CoolifyTeamMember {
   id: number;
   name: string;
   email: string;
-  role: 'owner' | 'admin' | 'member';
+  role: "owner" | "admin" | "member";
 }
 
 // ============================================
@@ -321,7 +336,7 @@ export interface CoolifyTeamMember {
 
 export interface CoolifyVersion {
   version: string;
-  status: 'success' | 'error';
+  status: "success" | "error";
 }
 
 // ============================================

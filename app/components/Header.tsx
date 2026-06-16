@@ -1,14 +1,20 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useSession, signIn, signOut } from 'next-auth/react';
-import { LayoutDashboard, FolderKanban, Layers, LogIn, LogOut } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { useSession, signIn, signOut } from "next-auth/react";
+import {
+  LayoutDashboard,
+  FolderKanban,
+  Layers,
+  LogIn,
+  LogOut,
+} from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const { data: session, status } = useSession();
-  const pathname  = usePathname();
-  const isAuth    = status === 'authenticated';
+  const pathname = usePathname();
+  const isAuth = status === "authenticated";
 
   const navItem = (href: string, label: string, Icon: React.ElementType) => {
     const active = pathname === href;
@@ -17,8 +23,8 @@ export default function Header() {
         href={href}
         className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-all duration-150 ${
           active
-            ? 'text-emerald-400 bg-emerald-500/10'
-            : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/5'
+            ? "text-emerald-400 bg-emerald-500/10"
+            : "text-zinc-500 hover:text-zinc-200 hover:bg-white/5"
         }`}
       >
         <Icon className="w-3.5 h-3.5" />
@@ -30,9 +36,9 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-2.5 bg-black/20 backdrop-blur-md border-b border-zinc-800/50">
       <nav className="flex items-center gap-0.5">
-        {navItem('/dashboard',     'Dashboard',    LayoutDashboard)}
-        {isAuth && navItem('/liste',         'Projects',     FolderKanban)}
-        {isAuth && navItem('/applications',  'Applications', Layers)}
+        {navItem("/dashboard", "Dashboard", LayoutDashboard)}
+        {isAuth && navItem("/liste", "Projects", FolderKanban)}
+        {isAuth && navItem("/applications", "Applications", Layers)}
       </nav>
 
       <div>

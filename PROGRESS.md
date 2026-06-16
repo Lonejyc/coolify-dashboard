@@ -7,6 +7,7 @@ Ce fichier trace l'avancement de la migration jour par jour.
 ## ✅ Jour 1 : Setup Initial (TERMINÉ)
 
 ### **Objectifs**
+
 - ✅ Créer branche `feature/coolify-control-plane`
 - ✅ Installer TypeScript et dépendances
 - ✅ Configurer tsconfig.json
@@ -16,6 +17,7 @@ Ce fichier trace l'avancement de la migration jour par jour.
 ### **Réalisations**
 
 #### **1. Infrastructure TypeScript**
+
 - ✅ Installation de TypeScript 5.3+
 - ✅ Types React (`@types/react`, `@types/node`, `@types/react-dom`)
 - ✅ Configuration `tsconfig.json` avec :
@@ -26,12 +28,14 @@ Ce fichier trace l'avancement de la migration jour par jour.
 - ✅ Types pour variables d'environnement (`types/env.d.ts`)
 
 #### **2. Dépendances Runtime**
+
 - ✅ `swr` (2.2.4) - Data fetching avec cache
 - ✅ `react-hot-toast` (2.4.1) - Notifications
 - ✅ `date-fns` (3.0.0) - Manipulation de dates
 - ✅ `zod` (3.22.4) - Validation de schémas
 
 #### **3. Configuration Coolify API**
+
 - ✅ Mise à jour `.env.local` avec structure commentée
 - ✅ Variables ajoutées :
   - `COOLIFY_API_URL`
@@ -43,6 +47,7 @@ Ce fichier trace l'avancement de la migration jour par jour.
   - Best practices sécurité
 
 #### **4. Types TypeScript Coolify**
+
 - ✅ Fichier `lib/types/coolify.ts` avec types complets :
   - `CoolifyApplication` (applications)
   - `CoolifyDeployment` (déploiements)
@@ -55,6 +60,7 @@ Ce fichier trace l'avancement de la migration jour par jour.
   - Types d'erreurs (`CoolifyAPIError`)
 
 #### **5. API Client Library**
+
 - ✅ Fichier `lib/coolify-client.ts` avec :
   - `coolifyFetch<T>()` - Fonction générique avec gestion erreurs
   - Wrappers : `coolifyGet`, `coolifyPost`, `coolifyPatch`, `coolifyDelete`
@@ -65,12 +71,14 @@ Ce fichier trace l'avancement de la migration jour par jour.
   - `testCoolifyConnection()` pour vérifier la connexion
 
 #### **6. Git & Commits**
+
 - ✅ Branche créée : `feature/coolify-control-plane`
 - ✅ 2 commits atomiques :
   1. `feat(setup): initialize TypeScript and Coolify API configuration`
   2. `feat(lib): add Coolify API types and client library`
 
 ### **Fichiers créés**
+
 ```
 tsconfig.json                 # Configuration TypeScript
 COOLIFY_SETUP.md              # Guide setup API (2000+ mots)
@@ -81,6 +89,7 @@ lib/coolify-client.ts         # Client API (250+ lignes)
 ```
 
 ### **Fichiers modifiés**
+
 ```
 package.json                  # Dépendances ajoutées
 package-lock.json             # Lockfile mis à jour
@@ -88,6 +97,7 @@ package-lock.json             # Lockfile mis à jour
 ```
 
 ### **Stats**
+
 - **Lignes de code ajoutées** : ~1000+
 - **Fichiers créés** : 6
 - **Commits** : 2
@@ -98,6 +108,7 @@ package-lock.json             # Lockfile mis à jour
 ## ✅ Jour 1.5 : Page Test Coolify (TERMINÉ)
 
 ### **Objectifs**
+
 - ✅ Créer une page de test pour valider la connexion API Coolify
 - ✅ Afficher la liste des applications avec leur status
 - ✅ Améliorer le design des cartes (plus attrayant)
@@ -105,6 +116,7 @@ package-lock.json             # Lockfile mis à jour
 ### **Réalisations**
 
 #### **1. API Route Proxy**
+
 - ✅ Fichier `pages/api/coolify/test.js`
   - Combine endpoints `/version` et `/applications`
   - Authentification NextAuth requise
@@ -113,6 +125,7 @@ package-lock.json             # Lockfile mis à jour
   - Logs détaillés pour debugging
 
 #### **2. Composant StatusBadge**
+
 - ✅ Fichier `components/coolify/StatusBadge.js`
   - Badges colorés pour tous les status (running/stopped/exited/degraded/restarting)
   - 3 tailles disponibles (sm/md/lg)
@@ -121,6 +134,7 @@ package-lock.json             # Lockfile mis à jour
   - Animation pour status "restarting"
 
 #### **3. Page Test**
+
 - ✅ Fichier `pages/test-coolify.js`
   - Protected par NextAuth (redirect si non auth)
   - SWR pour data fetching avec manual refresh
@@ -144,11 +158,13 @@ package-lock.json             # Lockfile mis à jour
   - Messages user-friendly + tips troubleshooting
 
 #### **4. Bugfixes**
+
 - ✅ Fix `authOptions` export (NextAuth)
 - ✅ Fix session serialization (user.id, user.image undefined)
 - ✅ Parse composite status format Coolify (`state:health`)
 
 ### **Stats**
+
 - **Fichiers créés** : 3 (test.js, StatusBadge.js, test-coolify.js)
 - **Fichiers modifiés** : 2 (Layout.js, [...nextauth].js)
 - **Lignes de code** : ~700+
@@ -160,6 +176,7 @@ package-lock.json             # Lockfile mis à jour
 ## ✅ Jour 2 : Infrastructure API + App Router (TERMINÉ)
 
 ### **Objectifs**
+
 - ✅ Setup structure `/app` directory
 - ✅ Créer layout.tsx global
 - ✅ Implémenter proxy API route `/app/api/coolify/[...slug]/route.ts`
@@ -169,6 +186,7 @@ package-lock.json             # Lockfile mis à jour
 ### **Réalisations**
 
 #### **2.1 Structure App Router**
+
 - ✅ Créé `/app/layout.tsx` avec :
   - SessionProvider NextAuth
   - Metadata (title, description)
@@ -180,6 +198,7 @@ package-lock.json             # Lockfile mis à jour
 - ✅ Créé `/app/not-found.tsx` - Page 404 personnalisée
 
 #### **2.2 API Routes Proxy**
+
 - ✅ `/app/api/coolify/[...slug]/route.ts` - Proxy dynamique universel
   - Support GET, POST, PATCH, DELETE, PUT
   - Authentification NextAuth obligatoire
@@ -191,6 +210,7 @@ package-lock.json             # Lockfile mis à jour
   - Pas de hard-coded endpoints (100% dynamique)
 
 ### **Fichiers créés**
+
 ```
 app/layout.tsx                 # Root layout avec SessionProvider
 app/page.tsx                   # Homepage (temporary redirect)
@@ -201,6 +221,7 @@ app/api/coolify/[...slug]/route.ts  # Universal API proxy
 ```
 
 ### **Stats**
+
 - **Lignes de code ajoutées** : ~400+
 - **Fichiers créés** : 7
 - **Commits** : 1
@@ -211,6 +232,7 @@ app/api/coolify/[...slug]/route.ts  # Universal API proxy
 ## ✅ Jour 3 : Application Management Dashboard (TERMINÉ)
 
 ### **Objectifs**
+
 - ✅ Migrer page test-coolify vers App Router
 - ✅ Créer composants réutilisables en TypeScript
 - ✅ Ajouter actions Deploy/Stop/Restart
@@ -219,6 +241,7 @@ app/api/coolify/[...slug]/route.ts  # Universal API proxy
 ### **Réalisations**
 
 #### **3.1 Components TypeScript**
+
 - ✅ **StatusBadge.tsx** (`app/components/coolify/StatusBadge.tsx`)
   - Migration JS → TypeScript
   - Props typées avec interfaces
@@ -238,6 +261,7 @@ app/api/coolify/[...slug]/route.ts  # Universal API proxy
   - Affichage : FQDN, Git repo+branch, build pack, last update
 
 #### **3.2 Applications Page**
+
 - ✅ **app/applications/page.tsx**
   - Migration complète de Pages Router vers App Router
   - 'use client' pour interactivité
@@ -251,12 +275,14 @@ app/api/coolify/[...slug]/route.ts  # Universal API proxy
   - Toast provider (react-hot-toast)
 
 #### **3.3 Coolify Types Extension**
+
 - ✅ Ajout types actions dans `lib/types/coolify.ts` :
   - `CoolifyActionResponse`
   - `CoolifyErrorResponse`
   - `ApplicationActionResult`
 
 #### **3.4 Navigation Update**
+
 - ✅ Renommé `pages/index.js` → `pages/dashboard.js` (éviter conflit App Router)
 - ✅ Mis à jour liens navigation :
   - `/dashboard` - System monitoring (Pages Router)
@@ -264,6 +290,7 @@ app/api/coolify/[...slug]/route.ts  # Universal API proxy
   - `/test-coolify` - Old test page (deprecated)
 
 ### **Fichiers créés**
+
 ```
 app/applications/page.tsx                    # Main applications dashboard
 app/components/coolify/StatusBadge.tsx       # Status badge component
@@ -272,6 +299,7 @@ pages/dashboard.js                           # Renamed from index.js
 ```
 
 ### **Fichiers modifiés**
+
 ```
 lib/types/coolify.ts          # Added action response types
 components/Layout.js          # Updated navigation links
@@ -279,6 +307,7 @@ app/page.tsx                  # Redirect to /dashboard
 ```
 
 ### **Stats**
+
 - **Lignes de code ajoutées** : ~650+
 - **Fichiers créés** : 4
 - **Fichiers renommés** : 1
@@ -286,6 +315,7 @@ app/page.tsx                  # Redirect to /dashboard
 - **Temps estimé** : 2-3 heures
 
 ### **Fonctionnalités clés**
+
 1. ✅ **Auto-refresh** : Applications list refreshes every 5s
 2. ✅ **Action buttons** : Deploy/Stop/Restart with loading states
 3. ✅ **Toast notifications** : User feedback for all actions
@@ -299,6 +329,7 @@ app/page.tsx                  # Redirect to /dashboard
 ## 📅 Jour 4 : Application Details & Enhancements
 
 ### **Objectifs**
+
 - [ ] Page détails application `/app/applications/[uuid]/page.tsx`
 - [ ] Tabs : Overview, Logs, Environment, Domains
 - [ ] Filtres et recherche dans liste applications
@@ -310,6 +341,7 @@ app/page.tsx                  # Redirect to /dashboard
 ## 📅 Jour 5-6 : Logs & Environment Variables
 
 ### **Objectifs**
+
 - [ ] Page logs `/app/applications/[uuid]/logs/page.tsx`
 - [ ] Streaming logs en temps réel
 - [ ] Page env vars `/app/applications/[uuid]/environment/page.tsx`
@@ -321,6 +353,7 @@ app/page.tsx                  # Redirect to /dashboard
 ## 📅 Jour 7-8 : Domaines & Monitoring
 
 ### **Objectifs**
+
 - [ ] Gestion domaines
 - [ ] Status SSL
 - [ ] Monitoring ressources serveur
@@ -331,6 +364,7 @@ app/page.tsx                  # Redirect to /dashboard
 ## 📅 Jour 9-11 : Databases & Webhooks
 
 ### **Objectifs**
+
 - [ ] CRUD Databases
 - [ ] Configuration backups
 - [ ] Webhooks CI/CD
@@ -341,6 +375,7 @@ app/page.tsx                  # Redirect to /dashboard
 ## 📅 Jour 12-14 : Polish & Déploiement
 
 ### **Objectifs**
+
 - [ ] Dashboard overview
 - [ ] Composants réutilisables finalisés
 - [ ] Tests complets
@@ -367,12 +402,14 @@ app/page.tsx                  # Redirect to /dashboard
 ## 📝 Notes & Décisions
 
 ### **Choix techniques**
+
 - **Pages Router conservé temporairement** : Cohabitation /pages et /app pendant migration
 - **Pas de Shadcn/UI** : Garder React Icons et style glassmorphism existant
 - **API Proxy obligatoire** : Token jamais exposé au client pour sécurité
 - **SWR pour data fetching** : Cache automatique + revalidation
 
 ### **Points d'attention**
+
 - ⚠️ Vérifier que `.env.local` reste dans `.gitignore`
 - ⚠️ Tester avec vraies données Coolify avant développement massif
 - ⚠️ Garder Pages Router fonctionnel jusqu'à migration complète
@@ -387,6 +424,7 @@ app/page.tsx                  # Redirect to /dashboard
 ## 🎉 Achievements Summary
 
 ### **Phase 1 Complete (Jours 1-3)**
+
 - ✅ TypeScript migration setup
 - ✅ Coolify API integration
 - ✅ App Router infrastructure
@@ -396,6 +434,7 @@ app/page.tsx                  # Redirect to /dashboard
 - ✅ Real-time updates with SWR
 
 ### **Current Status**
+
 - **Working**: Applications page with full CRUD actions
 - **Accessible**: `http://localhost:3000/applications` (requires auth)
 - **Pages Router**: Still active at `/dashboard` (system monitoring)

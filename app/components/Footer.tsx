@@ -1,6 +1,6 @@
 /**
  * Footer Component (App Router)
- * 
+ *
  * Shared footer for all App Router pages.
  * Simple copyright notice with current year.
  */

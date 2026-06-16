@@ -1,12 +1,12 @@
 /**
  * App Router - Error Boundary
- * 
+ *
  * Gère les erreurs non capturées dans l'application.
  */
 
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export default function Error({
   error,
@@ -16,7 +16,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('App Error:', error);
+    console.error("App Error:", error);
   }, [error]);
 
   return (
@@ -26,7 +26,8 @@ export default function Error({
           Une erreur est survenue
         </h2>
         <p className="text-slate-400 mb-6">
-          {error.message || "Quelque chose s'est mal passé. Veuillez réessayer."}
+          {error.message ||
+            "Quelque chose s'est mal passé. Veuillez réessayer."}
         </p>
         <button
           onClick={reset}

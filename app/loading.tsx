@@ -1,6 +1,6 @@
 /**
  * App Router - Loading State
- * 
+ *
  * Affiché pendant le chargement des pages.
  */
 

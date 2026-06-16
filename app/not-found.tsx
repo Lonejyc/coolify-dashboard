@@ -1,10 +1,10 @@
 /**
  * App Router - 404 Not Found
- * 
+ *
  * Page affichée pour les routes inexistantes.
  */
 
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function NotFound() {
   return (

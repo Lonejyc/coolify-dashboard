@@ -1,6 +1,6 @@
-import { getCsrfToken } from 'next-auth/react';
-import Head from 'next/head';
-import { User, Lock, LogIn } from 'lucide-react';
+import { getCsrfToken } from "next-auth/react";
+import Head from "next/head";
+import { User, Lock, LogIn } from "lucide-react";
 
 export default function SignIn({ csrfToken, error }) {
   return (
@@ -10,31 +10,47 @@ export default function SignIn({ csrfToken, error }) {
       </Head>
       <div className="min-h-screen bg-grain-background bg-cover flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
-
           {/* Logo / brand */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 mb-4">
               <LogIn className="w-5 h-5 text-emerald-400" />
             </div>
-            <h1 className="text-xl font-semibold text-zinc-50 tracking-tight">Welcome back</h1>
-            <p className="text-sm text-zinc-600 mt-1">Sign in to your control plane</p>
+            <h1 className="text-xl font-semibold text-zinc-50 tracking-tight">
+              Welcome back
+            </h1>
+            <p className="text-sm text-zinc-600 mt-1">
+              Sign in to your control plane
+            </p>
           </div>
 
           {/* Error banner */}
           {error && (
             <div className="mb-4 px-4 py-2.5 rounded-lg bg-red-500/5 border border-red-500/20 text-sm text-red-400 font-mono text-center">
-              {error === 'CredentialsSignin' ? 'Invalid username or password.' : `Error: ${error}`}
+              {error === "CredentialsSignin"
+                ? "Invalid username or password."
+                : `Error: ${error}`}
             </div>
           )}
 
           {/* Form card */}
           <div className="bg-black/40 backdrop-blur-md border border-zinc-800/50 rounded-xl p-6">
-            <form method="post" action="/api/auth/callback/credentials" className="flex flex-col gap-5">
-              <input name="csrfToken" type="hidden" defaultValue={csrfToken ?? ''} />
+            <form
+              method="post"
+              action="/api/auth/callback/credentials"
+              className="flex flex-col gap-5"
+            >
+              <input
+                name="csrfToken"
+                type="hidden"
+                defaultValue={csrfToken ?? ""}
+              />
 
               {/* Username */}
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="username" className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
+                <label
+                  htmlFor="username"
+                  className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest"
+                >
                   Username
                 </label>
                 <div className="relative group">
@@ -52,7 +68,10 @@ export default function SignIn({ csrfToken, error }) {
 
               {/* Password */}
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="password" className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
+                <label
+                  htmlFor="password"
+                  className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest"
+                >
                   Password
                 </label>
                 <div className="relative group">
@@ -93,7 +112,7 @@ export async function getServerSideProps(context) {
   return {
     props: {
       csrfToken: csrfToken ?? null,
-      error:     error     ?? null,
+      error: error ?? null,
     },
   };
 }
